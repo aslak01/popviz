@@ -4,8 +4,8 @@ import { curry } from 'rambda'
 export const elem = (tag: keyof HTMLElementTagNameMap) => document.createElement(tag);
 export const text = ( content: string) => document.createTextNode(content);
 export const getElem = ( id: string ) => document.getElementById(id);
-export const getText = () => (getElem('message-text') as HTMLInputElement).value;
-export const setText = (value: string) => (getElem('message-text') as HTMLInputElement).value = value;
+export const getInputText = (inputId: string) => (getElem(inputId) as HTMLInputElement).value;
+export const setInputText = (value: string, inputId: string) => (getElem(inputId) as HTMLInputElement).value = value;
 
 export const on = curry(function(eventType, element, fn) {
   element.addEventListener(eventType, fn);

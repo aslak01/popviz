@@ -1,35 +1,43 @@
-// import * as R from "ramda";
-import { pipe, compose } from 'rambda'
+import { pipe, compose, curry } from 'rambda'
 import {
   elem,
   text,
-  on,
+  // on,
   append,
   clear,
   attr,
-  addClass,
+  // addClass,
   getElem,
-  getText,
-  setText,
+  getInputText,
+  setInputText,
 } from "./functions";
 
-type State = string[];
-type Output = HTMLDivElement;
-type Dispatch = Event;
+const INPUTEL = 'search'
+const BTNEL = 'search-btn'
+const OUTPUTEL = 'charts'
+
+type State = readonly never[] | string[];
+type Output = HTMLElement | null;
+// type Dispatch = EventHandler
+
+export const on = curry(function(eventType, element, fn) {
+  element.addEventListener(eventType, fn);
+
+  return function() {
+    element.removeEventListener(eventType, fn);
+  }
+});
 
 function app(state: State, output: Output, dispatch: Dispatch) {
-  console.log("state", state);
-  console.log("output", output);
-  console.log("dispatch", dispatch);
   compose(append(view(state)), clear())(output);
 
-  const stop = dispatch((e: Event) => {
+  const stop = dispatch((_e: Event) => {
     stop();
-    const newText = getText();
+    const newText = getInputText(INPUTEL);
 
     const newState = [...state, newText];
 
-    setText("");
+    setInputText("", INPUTEL);
 
     app(newState, output, dispatch);
   });
@@ -37,12 +45,9 @@ function app(state: State, output: Output, dispatch: Dispatch) {
 
 function view(state: State) {
   const el = elem("div");
-  const rest = state.map((content: string, index: number) =>
-    append(message(content, index))
-  );
-  console.log("rest", ...rest);
   return state.length > 0
     ? pipe(
+      // @ts-expect-error: spreading params
       ...state.map((content: string, index: number) =>
         append(message(content, index))
       )
@@ -54,16 +59,14 @@ function message(content: string, index: number) {
   return compose(
     append(text(content)),
     attr("data-index", index),
-    addClass("bg-warning"),
-    addClass("p-3")
   )(elem("div"));
 }
 
-const buttonClick = on("click", getElem("message-button"));
+const buttonClick = on("click", getElem(BTNEL));
 
 app(
-  Object.freeze([]) as unknown as string[],
-  getElem("chart") as HTMLDivElement,
+  Object.freeze([]),
+  getElem(OUTPUTEL),
   buttonClick
 );
 
