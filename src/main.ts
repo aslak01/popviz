@@ -1,44 +1,44 @@
-import { pipe, compose, pick, map, uniq, pluck, difference, whereEq, filter, flip, includes } from 'rambda';
+import { pipe, compose, pick, map, uniq, pluck, difference, filter, includes } from 'rambda';
 import * as io from './io';
+import { deserialisePopData } from './deserialisation'
+import {chart} from './chart'
 
 const INPUTWRAPPEREL = 'selection-wrapper';
 const INPUTEL = 'selection'
 const BTNEL = 'search-btn';
 const OUTPUTEL = 'charts';
-
 const LISTURL = 'https://api.worldbank.org/v2/country?format=json&region=EUU';
-let COUNTRY_ID = ''
-const COUNTRYURL = `https://api.worldbank.org/v2/country/${COUNTRY_ID}/indicator/SP.POP.TOTL?format=json`
 
 const listData = await io.fetchJson(LISTURL)
 const pickSelectionProps: ((list: List) => List) = map(pick('id,name'))
 const countries = pickSelectionProps(listData[1])
 
-let countryData = []
-
 type State = readonly never[] | string[];
-type OutputEl = HTMLElement | null;
-type InputEl = HTMLElement | HTMLInputElement | null
 type Country = { name: string, id: string }
 type List = Country[]
 type Dispatcher = (fn: (event: MouseEvent) => any) => () => void;
 
 
-function app(state: State, list: List, input: InputEl, output: OutputEl, dispatch: Dispatcher) {
+async function app(state: State, list: List, dispatch: Dispatcher) {
   compose(io.append(view(state)), io.clear())(io.getElem(OUTPUTEL));
 
   compose(io.append(optionsView(list)), io.clear())(io.getElem(INPUTWRAPPEREL))
 
-  const stop = dispatch((_e: Event) => {
+  const stop = dispatch(async (_e: Event) => {
     stop();
 
     const newCountry = io.getInputValue(INPUTEL);
+
+    const countryData = deserialisePopData(await io.fetchCountry(newCountry))
+    console.log(countryData)
+    
+    chart(countryData)
     const newState = uniq([...state, newCountry]);
     const remainingCountries = difference(pluck('id', list), newState)
     const filterByCountry = filter((x: Country) => includes(x.id, remainingCountries))
     const newList = filterByCountry(list)
 
-    app(newState, newList, input, output, dispatch);
+    app(newState, newList, dispatch);
   });
 }
 
@@ -81,6 +81,6 @@ function options(country: Country) {
 
 const buttonClick = io.on('click', io.getElem(BTNEL));
 
-app(Object.freeze([]), countries, io.getElem(INPUTWRAPPEREL), io.getElem(OUTPUTEL), buttonClick);
+app(Object.freeze([]), countries, buttonClick);
 
 export default app;

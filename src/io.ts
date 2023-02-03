@@ -5,6 +5,17 @@ const fetchJson = async (url: string) => {
   return response.json()
 }
 
+const fetchCountry = async (id: string) => {
+  const COUNTRYURL = `https://api.worldbank.org/v2/country/${id}/indicator/SP.POP.TOTL?format=json`
+  const [meta, popData] = await fetchJson(COUNTRYURL)
+  if (meta.pages > 1) {
+    const p2 = COUNTRYURL.concat('&page=2')
+    const [_meta2, data2] = await fetchJson(p2)
+    return [...popData, ...data2]
+  }
+  return popData
+}
+
 const elem = (tag: keyof HTMLElementTagNameMap) => document.createElement(tag);
 const text = (content: string) => document.createTextNode(content);
 const getElem = (id: string): HTMLElement | HTMLInputElement | null => document.getElementById(id);
@@ -45,6 +56,7 @@ const clear = curry((element) => {
 
 export {
   fetchJson,
+  fetchCountry,
   elem,
   text,
   on,
