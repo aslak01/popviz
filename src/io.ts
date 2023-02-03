@@ -1,14 +1,20 @@
-import { curry } from 'rambda'
+import { curry, flip } from 'rambda'
 
 const fetchJson = async (url: string) => {
   const response = await fetch(url)
   return response.json()
 }
 
+const fetchList = async (url: string) => {
+  const [_meta, listData] = await fetchJson(url)
+  return listData
+}
+
 const fetchCountry = async (id: string) => {
   const COUNTRYURL = `https://api.worldbank.org/v2/country/${id}/indicator/SP.POP.TOTL?format=json`
   const [meta, popData] = await fetchJson(COUNTRYURL)
   if (meta.pages > 1) {
+    // this needs to be generalised in a real setting obviously
     const p2 = COUNTRYURL.concat('&page=2')
     const [_meta2, data2] = await fetchJson(p2)
     return [...popData, ...data2]
@@ -42,6 +48,9 @@ const append = curry(function(node, element) {
   return element;
 });
 
+
+const add = flip(append)
+
 const attr = curry(function(attributeName, attributeValue, element) {
   element.setAttribute(attributeName, attributeValue);
 
@@ -56,11 +65,13 @@ const clear = curry((element) => {
 
 export {
   fetchJson,
+  fetchList,
   fetchCountry,
   elem,
   text,
   on,
   append,
+  add,
   clear,
   attr,
   addClass,
