@@ -23,6 +23,8 @@ const fetchCountry = async (id: string) => {
 }
 
 const elem = (tag: keyof HTMLElementTagNameMap) => document.createElement(tag);
+const svg = () => document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+const path = () => document.createElementNS('http://www.w3.org/2000/svg', 'path');
 const text = (content: string) => document.createTextNode(content);
 const getElem = (id: string): HTMLElement | HTMLInputElement | null => document.getElementById(id);
 const getInputValue = (inputId: string) => (getElem(inputId) as HTMLInputElement).value;
@@ -68,6 +70,8 @@ export {
   fetchList,
   fetchCountry,
   elem,
+  svg,
+  path,
   text,
   on,
   append,
