@@ -18,8 +18,9 @@ export const chart = (country: FetchedCountry) => {
 
   const first = country.data[0]
   const last = country.data[country.data.length - 1]
+  const maxY = Math.max(...country.data.map(d => d.value))
 
-  const dateParser = d3.timeParse('%Y')
+  // const dateParser = d3.timeParse('%Y')
   // const xAccessor = (d: PopData) => dateParser(d.date)
   // const yAccessor = (d: PopData) => d.value
 
@@ -30,11 +31,11 @@ export const chart = (country: FetchedCountry) => {
 
   const yScale = d3
     .scaleLinear()
-    .domain([0, d3.max(country.data, d => d.value) + d3.max(country.data, d => d.value) / 10])
-    .range([margins.top, height - margins.bottom])
-  // .nice()
+    .domain([0, maxY])
+    .range([height - margins.top, margins.bottom])
+    .nice()
 
-  const line = d3.line().x(d => xScale(d.date)).y(d => yScale(d.value))
+  const line = d3.line().x((d: PopData) => xScale(Number(d.date))).y((d: PopData) => yScale(d.value))
 
   console.log(country.value, first, last)
   // svg is not like other dom elements:
@@ -43,8 +44,6 @@ export const chart = (country: FetchedCountry) => {
     io.attr('height', height),
     io.attr('width', width),
     io.attr('viewBox', `0 0 ${width} ${height}`),
-    io.attr('stroke', 'black'),
-    io.attr('fill', 'white')
   )(io.elemNS('svg'))
 
   // console.log(line(country.data))
@@ -53,8 +52,8 @@ export const chart = (country: FetchedCountry) => {
   const chartPath = compose(
     io.attr('d', line(country.data)),
     io.attr('stroke', 'white'),
-    io.attr('stroke-width', '4px'),
-    io.attr('fille', 'none')
+    io.attr('stroke-width', '1px'),
+    io.attr('fill', 'none')
   )(io.elemNS('path'))
 
   // const chartRect = compose(
