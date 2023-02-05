@@ -3,7 +3,7 @@ type List = Country[]
 type Dispatcher = (fn: (event: MouseEvent) => any) => () => void;
 
 type PopData = {
-  date: number,
+  date: string,
   value: number
 }
 interface FetchedCountry extends Country{
