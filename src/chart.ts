@@ -1,24 +1,28 @@
-import { compose, pipe } from 'rambda'
-import * as d3 from 'd3'
+import {
+  compose,
+  // pipe 
+} from 'rambda';
+
+import * as d3 from 'd3';
 import * as io from './io';
-import type { FetchedCountry, PopData } from './types'
+import type { FetchedCountry, PopData } from './types';
 
 export const chart = (country: FetchedCountry) => {
-
-  const height = 50
-  const width = 300
+  const height = 20;
+  const width = 200;
   const margins = {
     top: 0,
     bottom: 0,
     left: 5,
-    right: 5
-  }
+    right: 5,
+  };
   // Sorting to ensure logical order
   country.data = country.data.sort((a, b) => Number(a.date) - Number(b.date));
 
-  const first = country.data[0]
-  const last = country.data[country.data.length - 1]
-  const maxY = Math.max(...country.data.map(d => d.value))
+  const first = country.data[0];
+  const last = country.data[country.data.length - 1];
+  const maxY = Math.max(...country.data.map((d) => d.value));
+  const minY = Math.min(...country.data.map((d) => d.value))
 
   // const dateParser = d3.timeParse('%Y')
   // const xAccessor = (d: PopData) => dateParser(d.date)
@@ -27,34 +31,39 @@ export const chart = (country: FetchedCountry) => {
   const xScale = d3
     .scaleTime()
     .domain([Number(first.date), Number(last.date)])
-    .range([margins.left, width - margins.right])
+    .range([margins.left, width - margins.right]);
 
   const yScale = d3
     .scaleLinear()
-    .domain([0, maxY])
+    .domain([minY, maxY])
     .range([height - margins.top, margins.bottom])
-    .nice()
+    .nice();
 
-  const line = d3.line().x((d: PopData) => xScale(Number(d.date))).y((d: PopData) => yScale(d.value))
 
-  console.log(country.value, first, last)
+  const transform = (d: PopData): [number, number] => [xScale(d.date), yScale(d.value)]
+
+  const scaled = country.data.map(transform)
+  const theLine = d3.line()(scaled)
+
+
+  console.log(country.value, first, last);
   // svg is not like other dom elements:
   // https://dev.to/tqbit/how-to-create-svg-elements-with-javascript-4mmp
   const chartSvg = compose(
     io.attr('height', height),
     io.attr('width', width),
-    io.attr('viewBox', `0 0 ${width} ${height}`),
-  )(io.elemNS('svg'))
+    io.attr('viewBox', `0 0 ${width} ${height}`)
+  )(io.elemNS('svg'));
 
   // console.log(line(country.data))
   // console.log(country.data)
 
   const chartPath = compose(
-    io.attr('d', line(country.data)),
+    io.attr('d', theLine),
     io.attr('stroke', 'white'),
     io.attr('stroke-width', '1px'),
     io.attr('fill', 'none')
-  )(io.elemNS('path'))
+  )(io.elemNS('path'));
 
   // const chartRect = compose(
   //   io.attr('height', height),
@@ -63,10 +72,9 @@ export const chart = (country: FetchedCountry) => {
   // )(io.elemNS('rect'))
 
   compose(
-    io.append(chartPath),
+    io.append(chartPath)
     // io.append(chartRect)
-  )(chartSvg)
-
+  )(chartSvg);
 
   // io.append(io.text(country.value)),
   // io.append(io.text(country.id)),
@@ -74,8 +82,7 @@ export const chart = (country: FetchedCountry) => {
   // pipe(io.append(io.path))(io.svg))
   // )(io.elem('div'));
 
-  return io.append(chartSvg)(io.elem('div'))
-
+  return io.append(chartSvg)(io.elem('div'));
 
   // function message(content: string, index: number) {
   //   return compose(
@@ -83,7 +90,4 @@ export const chart = (country: FetchedCountry) => {
   //     io.attr('data-index', index)
   //   )(io.elem('div'));
   // }
-
-
-
-}
+};
