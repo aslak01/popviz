@@ -1,6 +1,6 @@
 import {
   compose,
-  // pipe 
+  // pipe
 } from 'rambda';
 
 import * as d3 from 'd3';
@@ -22,7 +22,7 @@ export const chart = (country: FetchedCountry) => {
   const first = country.data[0];
   const last = country.data[country.data.length - 1];
   const maxY = Math.max(...country.data.map((d) => d.value));
-  const minY = Math.min(...country.data.map((d) => d.value))
+  const minY = Math.min(...country.data.map((d) => d.value));
 
   // const dateParser = d3.timeParse('%Y')
   // const xAccessor = (d: PopData) => dateParser(d.date)
@@ -39,12 +39,13 @@ export const chart = (country: FetchedCountry) => {
     .range([height - margins.top, margins.bottom])
     .nice();
 
+  const transform = (d: PopData): [number, number] => [
+    xScale(d.date),
+    yScale(d.value),
+  ];
 
-  const transform = (d: PopData): [number, number] => [xScale(d.date), yScale(d.value)]
-
-  const scaled = country.data.map(transform)
-  const theLine = d3.line()(scaled)
-
+  const scaled = country.data.map(transform);
+  const theLine = d3.line()(scaled);
 
   console.log(country.value, first, last);
   // svg is not like other dom elements:
@@ -91,3 +92,5 @@ export const chart = (country: FetchedCountry) => {
   //   )(io.elem('div'));
   // }
 };
+
+export default chart;

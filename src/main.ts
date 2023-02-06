@@ -1,10 +1,8 @@
-import type { State, Country, List, Dispatcher, FetchedCountry } from './types';
+import type { State, Country, List, Dispatcher } from './types';
 import {
   pipe,
   compose,
-  find,
   flip,
-  propEq,
   uniq,
   pluck,
   difference,
@@ -13,7 +11,8 @@ import {
 } from 'rambda';
 import * as io from './io';
 import * as deserialise from './deserialise';
-import { chart } from './chart';
+import * as serialise from './serialise';
+import chart from './chart';
 
 const INPUTWRAPPEREL = 'selection-wrapper';
 const INPUTEL = 'selection';
@@ -32,27 +31,19 @@ async function app(state: State, list: List, dispatch: Dispatcher) {
     stop();
 
     const selectedCountryId = io.getInputValue(INPUTEL);
-    const selectedCountry = find(propEq('id', selectedCountryId))(list);
-    const countryData = deserialise.popData(
-      await io.fetchCountry(selectedCountryId)
-    );
-    const newCountry = {
-      ...selectedCountry,
-      data: countryData,
-    } as FetchedCountry;
+
+    const newCountry = await serialise.addCountry(selectedCountryId, list);
 
     const newState = uniq([...state, newCountry]);
 
-    const remainingCountries = difference(
+    const selectableCountries = difference(
       pluck('id', list),
       pluck('id', newState)
     );
 
-    const filterByCountry = filter((x: Country) =>
-      includes(x.id, remainingCountries)
+    const newList = filter((x: Country) => includes(x.id, selectableCountries))(
+      list
     );
-
-    const newList = filterByCountry(list);
 
     app(newState, newList, dispatch);
   });
