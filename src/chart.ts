@@ -1,3 +1,4 @@
+import type { FetchedCountry, PopData } from './types';
 import {
   compose,
   // pipe
@@ -5,17 +6,24 @@ import {
 
 import * as d3 from 'd3';
 import * as io from './io';
-import type { FetchedCountry, PopData } from './types';
+import { formatNr } from './utils';
+
+const lineColor = 'white';
+const lineWidth = '1px';
+const textColor = 'white';
 
 export const chart = (country: FetchedCountry) => {
-  const height = 20;
-  const width = 200;
   const margins = {
-    top: 0,
-    bottom: 0,
-    left: 5,
-    right: 5,
+    top: 10,
+    bottom: 10,
+    left: 10,
+    right: 10,
   };
+
+  const textPadding = 5;
+
+  const height = 20 + margins.top + margins.bottom;
+  const width = 200 + margins.left + margins.right;
   // Sorting to ensure logical order
   country.data = country.data.sort((a, b) => Number(a.date) - Number(b.date));
 
@@ -45,7 +53,9 @@ export const chart = (country: FetchedCountry) => {
   ];
 
   const scaled = country.data.map(transform);
-  const theLine = d3.line()(scaled);
+  const firstCoord = scaled[0];
+  const lastCoord = scaled[scaled.length - 1];
+  const line = d3.line()(scaled);
 
   console.log(country.value, first, last);
   // svg is not like other dom elements:
@@ -56,41 +66,47 @@ export const chart = (country: FetchedCountry) => {
     io.attr('viewBox', `0 0 ${width} ${height}`)
   )(io.elemNS('svg'));
 
-  // console.log(line(country.data))
-  // console.log(country.data)
-
   const chartPath = compose(
-    io.attr('d', theLine),
-    io.attr('stroke', 'white'),
-    io.attr('stroke-width', '1px'),
+    io.attr('d', line),
+    io.attr('stroke', lineColor),
+    io.attr('stroke-width', lineWidth),
     io.attr('fill', 'none')
   )(io.elemNS('path'));
 
-  // const chartRect = compose(
-  //   io.attr('height', height),
-  //   io.attr('width', width),
-  //   io.attr('fill', 'white')
-  // )(io.elemNS('rect'))
+  const labelChart = compose(
+    io.append(io.text(country.value)),
+    io.attr('x', width / 2),
+    io.attr('y', margins.top - textPadding),
+    io.attr('text-anchor', 'middle'),
+    io.attr('dominant-baseline', 'auto')
+  )(io.elemNS('text'));
+
+  const labelFirst = compose(
+    io.append(io.text(formatNr(first.value))),
+    io.attr('x', firstCoord[0] - textPadding),
+    io.attr('y', firstCoord[1]),
+    io.attr('text-anchor', 'end'),
+    io.attr('dominant-baseline', 'middle')
+  )(io.elemNS('text'));
+
+  const labelLast = compose(
+    io.append(io.text(formatNr(last.value))),
+    io.attr('x', lastCoord[0] + textPadding),
+    io.attr('y', lastCoord[1]),
+    io.attr('text-anchor', 'start'),
+    io.attr('dominant-baseline', 'middle')
+  )(io.elemNS('text'));
 
   compose(
+    io.append(labelChart),
+    io.append(labelFirst),
+    io.append(labelLast),
     io.append(chartPath)
-    // io.append(chartRect)
   )(chartSvg);
 
-  // io.append(io.text(country.value)),
-  // io.append(io.text(country.id)),
-  // io.append(io.text(first.value + '->' + last.value)),
-  // pipe(io.append(io.path))(io.svg))
-  // )(io.elem('div'));
-
-  return io.append(chartSvg)(io.elem('div'));
-
-  // function message(content: string, index: number) {
-  //   return compose(
-  //     io.append(io.text(content)),
-  //     io.attr('data-index', index)
-  //   )(io.elem('div'));
-  // }
+  return io.append(chartSvg)(
+    compose(io.attr('class', 'chart'))(io.elem('div'))
+  );
 };
 
 export default chart;

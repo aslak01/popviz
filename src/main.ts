@@ -16,16 +16,26 @@ import chart from './chart';
 
 const INPUTWRAPPEREL = 'selection-wrapper';
 const INPUTEL = 'selection';
-const BTNEL = 'search-btn';
+const BTNWRAPPEREL = 'button-wrapper';
+const BTNEL = 'select-btn';
 const OUTPUTEL = 'charts';
 const LISTURL = 'https://api.worldbank.org/v2/country?format=json&region=EUU';
 
 const countries = deserialise.listData(await io.fetchList(LISTURL));
 
 async function app(state: State, list: List, dispatch: Dispatcher) {
+  const outputEl = io.getElem(OUTPUTEL);
+
+  document.scrollingElement
+    ? document.scrollingElement.scrollTo(
+        0,
+        outputEl ? outputEl.scrollHeight : 0
+      )
+    : null;
+
   compose(io.append(optionsView(list)), io.clear())(io.getElem(INPUTWRAPPEREL));
 
-  compose(io.append(view(state)), io.clear())(io.getElem(OUTPUTEL));
+  compose(io.append(view(state)), io.clear())(outputEl);
 
   const stop = dispatch(async (_e: Event) => {
     stop();
@@ -72,6 +82,11 @@ function options(country: Country) {
   )(io.elem('option'));
 }
 
+const button = compose(
+  io.attr('id', BTNEL),
+  io.append(io.text('Select country'))
+)(io.elem('button'));
+compose(io.append(button))(io.getElem(BTNWRAPPEREL));
 const buttonClick = io.on('click', io.getElem(BTNEL));
 
 app(Object.freeze([]), countries, buttonClick);
