@@ -23,6 +23,8 @@ const fetchCountry = async (id: string) => {
 };
 
 const elem = (tag: keyof HTMLElementTagNameMap) => document.createElement(tag);
+// svg is not like other dom elements:
+// https://dev.to/tqbit/how-to-create-svg-elements-with-javascript-4mmp
 const elemNS = (tag: keyof SVGElementTagNameMap) =>
   document.createElementNS('http://www.w3.org/2000/svg', tag);
 const text = (content: string) => document.createTextNode(content);
