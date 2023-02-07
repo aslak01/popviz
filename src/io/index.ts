@@ -69,6 +69,15 @@ const clear = curry((element) => {
   return element;
 });
 
+const scrollDown = (outputEl: HTMLElement) => {
+  document.scrollingElement
+    ? document.scrollingElement.scrollTo(
+      0,
+      outputEl!.scrollHeight
+    )
+    : null;
+}
+
 export {
   fetchJson,
   fetchList,
@@ -83,6 +92,6 @@ export {
   attr,
   addClass,
   getElem,
-  getInputValue as getInputValue,
-  setInputValue as setInputText,
+  getInputValue,
+  scrollDown
 };

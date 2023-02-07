@@ -73,7 +73,8 @@ aside p {
 
 select {
   display: block;
-  width: 100%;
+  width: 95%;
+  margin-inline: auto;
   font-size: 12pt;
 }
 

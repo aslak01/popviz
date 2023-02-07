@@ -2,8 +2,8 @@ type PopDataRaw = { date: string; value: number };
 type PopData = { date: number; value: number };
 type Country = { id: string; value: string };
 type FetchedCountry = Country & { data: PopData[] }
-type State = readonly never[] | string[];
-type Render = FetchedCountry[]
+type State = string[];
+type FetchedCountries = FetchedCountry[]
 type List = Country[];
 type Dispatcher = (fn: (event: MouseEvent) => any) => () => void;
 
@@ -71,7 +71,7 @@ export type {
   State,
   Country,
   List,
-  Render,
+  FetchedCountries,
   Dispatcher,
   PopData,
   PopDataRaw,
