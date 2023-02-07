@@ -1,6 +1,7 @@
 import type { FetchedCountry, PopData } from './types';
 import {
   compose,
+  filter
   // pipe
 } from 'rambda';
 
@@ -47,15 +48,27 @@ export const chart = (country: FetchedCountry) => {
     .range([height - margins.top, margins.bottom])
     .nice();
 
-  const transform = (d: PopData): [number, number] => [
+  const scaleData = (d: PopData): [number, number] => [
     xScale(d.date),
     yScale(d.value),
   ];
 
-  const scaled = country.data.map(transform);
-  const firstCoord = scaled[0];
-  const lastCoord = scaled[scaled.length - 1];
-  const line = d3.line()(scaled);
+  const scaledData = country.data.map(scaleData);
+  const firstCoord = scaledData[0];
+  const lastCoord = scaledData[scaledData.length - 1];
+  const line = d3.line().curve(d3.curveCardinal)(scaledData);
+
+  type TickData = { coords: [number, number], label: number }
+
+  const tickData = (data: PopData[], coords: [number, number][], m: { bottom: number }, frequency: number) => {
+    const tickData = coords.map((c, i) => ({ coords: [c[0], height], label: data[i].date })) as TickData[]
+    const pickTicks = (n: number, array: TickData[]) => {
+      const result = array.filter((_el, i) => i % n === 0)
+      return result
+    }
+    return pickTicks(frequency, tickData)
+  }
+  const ticks = tickData(country.data, scaledData, margins, 10)
 
   console.log(country.value, first, last);
   // svg is not like other dom elements:
@@ -65,6 +78,35 @@ export const chart = (country: FetchedCountry) => {
     io.attr('width', width),
     io.attr('viewBox', `0 0 ${width} ${height}`)
   )(io.elemNS('svg'));
+
+  // const tickMarks = compose(
+  //   ticks.map(t => compose(io.attr('x'))(io.elemNS('line'))))
+  // )(io.elemNS('g'))
+
+  const tickMarks = (ticks: TickData[]) => {
+    const el = io.elemNS('g')
+    ticks.map((t: TickData) => drawTick(t.coords, t.label)).forEach(io.add(el))
+    ticks.map((t: TickData) => drawTickLabel(t.coords, t.label)).forEach(io.add(el))
+    return el
+  }
+
+  const drawTick = (coords, value) => compose(
+    io.attr('x1', coords[0]),
+    io.attr('x2', coords[0]),
+    io.attr('y1', coords[1]),
+    io.attr('y2', coords[1] - 5),
+    io.attr('stroke', 'white')
+  )(io.elemNS('line'))
+
+  const drawTickLabel = (coords, value) => compose(
+    io.append(io.text(value)),
+    io.attr('x', coords[0]),
+    io.attr('y',coords[1]+10),
+    io.attr('text-anchor', 'middle'),
+    io.attr('dominant-baseline', 'auto')
+  )(io.elemNS('text'))
+
+  const theTicks = tickMarks(ticks)
 
   const chartPath = compose(
     io.attr('d', line),
@@ -97,12 +139,16 @@ export const chart = (country: FetchedCountry) => {
     io.attr('dominant-baseline', 'middle')
   )(io.elemNS('text'));
 
+
+
   compose(
     io.append(labelChart),
     io.append(labelFirst),
     io.append(labelLast),
-    io.append(chartPath)
+    io.append(chartPath),
+    io.append(theTicks)
   )(chartSvg);
+
 
   return io.append(chartSvg)(
     compose(io.attr('class', 'chart'))(io.elem('div'))

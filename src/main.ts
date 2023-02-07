@@ -25,17 +25,22 @@ const countries = deserialise.listData(await io.fetchList(LISTURL));
 
 async function app(state: State, list: List, dispatch: Dispatcher) {
   const outputEl = io.getElem(OUTPUTEL);
+  const inputWrapper = io.getElem(INPUTWRAPPEREL)
+  const btn = io.getElem(BTNEL) as HTMLInputElement
+
+  list?.length === 0 ? io.attr('disabled', 'disabled')(btn) : btn!.disabled = false;
+
+  compose(io.append(optionsView(list)), io.clear())(inputWrapper);
+
+  compose(io.append(view(state)), io.clear())(outputEl);
+
 
   document.scrollingElement
     ? document.scrollingElement.scrollTo(
-        0,
-        outputEl ? outputEl.scrollHeight : 0
-      )
+      0,
+      outputEl!.scrollHeight
+    )
     : null;
-
-  compose(io.append(optionsView(list)), io.clear())(io.getElem(INPUTWRAPPEREL));
-
-  compose(io.append(view(state)), io.clear())(outputEl);
 
   const stop = dispatch(async (_e: Event) => {
     stop();
@@ -61,18 +66,19 @@ async function app(state: State, list: List, dispatch: Dispatcher) {
 
 function view(state: State) {
   const el = io.elem('div');
-  const add = flip(io.append)(el);
-  state.map(chart).forEach(add);
+  state.map(chart).forEach(io.add(el));
   return el;
 }
 
 function optionsView(list: List) {
+  const el = compose(io.attr('id', 'selection'))(io.elem('select'))
+  // list.map(options).forEach(io.add(el))
   return list.length > 0
     ? pipe(
-        // @ts-expect-error: spreading params
-        ...list.map((c: Country) => io.append(options(c)))
-      )(io.attr('id', 'selection')(io.elem('select')))
-    : null;
+      // @ts-expect-error: spreading params
+      ...list.map((c: Country) => io.append(options(c)))
+    )(el)
+    : el;
 }
 
 function options(country: Country) {
@@ -86,7 +92,9 @@ const button = compose(
   io.attr('id', BTNEL),
   io.append(io.text('Select country'))
 )(io.elem('button'));
+
 compose(io.append(button))(io.getElem(BTNWRAPPEREL));
+
 const buttonClick = io.on('click', io.getElem(BTNEL));
 
 app(Object.freeze([]), countries, buttonClick);

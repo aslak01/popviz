@@ -59,7 +59,7 @@ h1 {
 }
 
 .chart {
-  padding: 0.1rem;
+  padding: 1rem 0;
 }
 
 button {
@@ -75,8 +75,17 @@ button {
   transition: border-color 0.25s;
 }
 
+button:disabled {
+  background-color: #343434;
+  color: #424242;
+}
+
 button:hover {
   border-color: #646cff;
+}
+
+button:disabled:hover {
+  border-color: #424242;
 }
 
 button:focus,
@@ -91,3 +100,8 @@ svg text {
   fill: white;
   font-size: 8pt;
 }
+
+svg:hover path {
+  stroke: #de3163;
+}
+
