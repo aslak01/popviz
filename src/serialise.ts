@@ -7,7 +7,7 @@ const addCountry = async (id: string, list: List): Promise<FetchedCountry> => {
   const selectCountry = (id: string, list: List): Country => {
     const c = find(propEq('id', id))(list);
     // TODO
-    // doesn't properly handle problems with fetch:
+    // doesn't handle failures
     return c as Country;
   };
   const selectedCountry = selectCountry(id, list);

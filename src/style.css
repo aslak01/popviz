@@ -12,6 +12,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  --container-padding: 2rem;
 }
 
 a {
@@ -21,7 +23,7 @@ a {
   text-decoration: inherit;
 }
 a:hover {
-  opacity: .95;
+  opacity: 1;
 }
 
 body {
@@ -31,6 +33,7 @@ body {
 }
 
 h1 {
+  margin-top: 0;
   font-size: 1.2em;
   color: white;
   opacity: .9;
@@ -39,16 +42,15 @@ h1 {
 
 .container {
   max-width: 1280px;
-  padding: 1rem;
-  margin: 0 auto;
-  place-items: center;
+  padding-inline: var(--container-padding);
+  padding-bottom: var(--container-padding);
+  justify-content: center;
   display: flex;
-  position: relative;
 }
 
 #charts {
   width: 400px;
-  padding-left: 100px;
+  min-height: calc(100vh - calc(var(--container-padding) * 2));
 }
 
 aside {
@@ -82,7 +84,7 @@ select {
 button {
   display: block;
   width: 100%;
-  color: white;
+  color: #ccc;
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -100,6 +102,7 @@ button:disabled {
 }
 
 button:hover {
+  color: #eee;
   border-color: #646cff;
 }
 
@@ -118,8 +121,14 @@ svg {
 
 svg .chart-title {
   fill: white;
+  font-weight: 600;
   opacity: .7;
 }
+
+#charts div .chart:last-child svg .chart-title,
+#charts div .chart:last-child svg .chart-line,
+#charts div .chart:last-child svg .chart-label,
+svg:hover .chart-line,
 svg:hover .chart-title {
   opacity: .9;
 }
@@ -145,6 +154,3 @@ svg .chart-line {
   opacity: .7;
 }
 
-svg:hover .chart-line {
-  opacity: .9;
-}

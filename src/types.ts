@@ -1,24 +1,16 @@
+type PopDataRaw = { date: string; value: number };
+type PopData = { date: number; value: number };
 type Country = { id: string; value: string };
+type FetchedCountry = Country & { data: PopData[] }
+type State = readonly never[] | string[];
+type Render = FetchedCountry[]
 type List = Country[];
 type Dispatcher = (fn: (event: MouseEvent) => any) => () => void;
 
-type PopDataRaw = {
-  date: string;
-  value: number;
-};
+type Coords = [number, number]
+type TickData = { coords: Coords, label: number }
 
-type PopData = {
-  date: number;
-  value: number;
-};
-
-interface FetchedCountry extends Country {
-  data: PopData[];
-}
-
-type State = readonly never[] | FetchedCountry[];
-
-interface InputListDataEntry {
+type InputListDataEntry {
   adminregion: {
     id: string;
     iso2code: string;
@@ -47,7 +39,7 @@ interface InputListDataEntry {
   };
 }
 
-interface InputCountryDataMeta {
+type InputCountryDataMeta {
   lastupdated: string;
   page: number;
   pages: number;
@@ -57,7 +49,7 @@ interface InputCountryDataMeta {
   total: number;
 }
 
-interface InputCountryData {
+type InputCountryData {
   country: {
     id: string;
     value: string;
@@ -74,13 +66,17 @@ interface InputCountryData {
   value: number;
 }
 
+
 export type {
   State,
   Country,
   List,
+  Render,
   Dispatcher,
   PopData,
   PopDataRaw,
+  Coords,
+  TickData,
   FetchedCountry,
   InputCountryData,
   InputCountryDataMeta,
