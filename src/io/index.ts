@@ -32,8 +32,6 @@ const getElem = (id: string): HTMLElement | HTMLInputElement | null =>
   document.getElementById(id);
 const getInputValue = (inputId: string) =>
   (getElem(inputId) as HTMLInputElement).value;
-const setInputValue = (value: string, inputId: string) =>
-  ((getElem(inputId) as HTMLInputElement).value = value);
 
 const on = curry(function (eventType, element, fn) {
   element.addEventListener(eventType, fn);
@@ -71,12 +69,9 @@ const clear = curry((element) => {
 
 const scrollDown = (outputEl: HTMLElement) => {
   document.scrollingElement
-    ? document.scrollingElement.scrollTo(
-      0,
-      outputEl!.scrollHeight
-    )
+    ? document.scrollingElement.scrollTo(0, outputEl!.scrollHeight)
     : null;
-}
+};
 
 export {
   fetchJson,
@@ -93,5 +88,5 @@ export {
   addClass,
   getElem,
   getInputValue,
-  scrollDown
+  scrollDown,
 };

@@ -1,7 +1,5 @@
 import type { FetchedCountry, PopData, Coords, TickData } from '../types';
-import {
-  compose,
-} from 'rambda';
+import { compose } from 'rambda';
 
 import * as d3 from 'd3';
 import * as io from './index';
@@ -12,8 +10,8 @@ export const chart = (country: FetchedCountry) => {
   const margins = {
     top: 15,
     bottom: 25,
-    left: 60,
-    right: 60,
+    left: 65,
+    right: 65,
   };
 
   const textPadding = 5;
@@ -30,7 +28,7 @@ export const chart = (country: FetchedCountry) => {
   const maxY = Math.max(...country.data.map((d) => d.value));
   const minY = Math.min(...country.data.map((d) => d.value));
 
-  console.log('Charting data: ', country.value, first, last);
+  // console.log('Charting data: ', country.value, first, last);
 
   const xScale = d3
     .scaleTime()
@@ -53,16 +51,22 @@ export const chart = (country: FetchedCountry) => {
   const lastCoord = scaledData[scaledData.length - 1];
   const line = d3.line().curve(d3.curveCardinal)(scaledData);
 
-
-  const serialiseTickData = (data: PopData[], coords: Coords[], frequency: number): TickData[] => {
-    const tickData = coords.map((c, i) => ({ coords: [c[0], height], label: data[i].date })) as TickData[]
+  const serialiseTickData = (
+    data: PopData[],
+    coords: Coords[],
+    frequency: number
+  ): TickData[] => {
+    const tickData = coords.map((c, i) => ({
+      coords: [c[0], height],
+      label: data[i].date,
+    })) as TickData[];
     const pickTicks = (n: number, array: TickData[]) => {
-      const result = array.filter((_el, i) => i % n === 0)
-      return result
-    }
-    return pickTicks(frequency, tickData)
-  }
-  const tickData = serialiseTickData(country.data, scaledData, 10)
+      const result = array.filter((_el, i) => i % n === 0);
+      return result;
+    };
+    return pickTicks(frequency, tickData);
+  };
+  const tickData = serialiseTickData(country.data, scaledData, 10);
 
   const chartSvg = compose(
     io.attr('height', height),
@@ -70,31 +74,33 @@ export const chart = (country: FetchedCountry) => {
     io.attr('viewBox', `0 0 ${width} ${height}`)
   )(io.elemNS('svg'));
 
-  const drawTick = (ticks: TickData) => compose(
-    io.attr('x1', ticks.coords[0]),
-    io.attr('x2', ticks.coords[0]),
-    io.attr('y1', ticks.coords[1] - 15),
-    io.attr('y2', ticks.coords[1] - 10),
-    io.attr('class', 'tick-mark')
-  )(io.elemNS('line'))
+  const drawTick = (ticks: TickData) =>
+    compose(
+      io.attr('x1', ticks.coords[0]),
+      io.attr('x2', ticks.coords[0]),
+      io.attr('y1', ticks.coords[1] - 15),
+      io.attr('y2', ticks.coords[1] - 10),
+      io.attr('class', 'tick-mark')
+    )(io.elemNS('line'));
 
-  const drawTickLabel = (ticks: TickData) => compose(
-    io.append(io.text(String(ticks.label))),
-    io.attr('x', ticks.coords[0]),
-    io.attr('y', ticks.coords[1]),
-    io.attr('class', 'tick-label'),
-    io.attr('text-anchor', 'middle'),
-    io.attr('dominant-baseline', 'auto')
-  )(io.elemNS('text'))
+  const drawTickLabel = (ticks: TickData) =>
+    compose(
+      io.append(io.text(String(ticks.label))),
+      io.attr('x', ticks.coords[0]),
+      io.attr('y', ticks.coords[1]),
+      io.attr('class', 'tick-label'),
+      io.attr('text-anchor', 'middle'),
+      io.attr('dominant-baseline', 'auto')
+    )(io.elemNS('text'));
 
   const drawTicks = (ticks: TickData[]) => {
-    const el = io.elemNS('g')
-    ticks.map(drawTick).forEach(io.add(el))
-    ticks.map(drawTickLabel).forEach(io.add(el))
-    return el
-  }
+    const el = io.elemNS('g');
+    ticks.map(drawTick).forEach(io.add(el));
+    ticks.map(drawTickLabel).forEach(io.add(el));
+    return el;
+  };
 
-  const ticks = drawTicks(tickData)
+  const ticks = drawTicks(tickData);
 
   const chartPath = compose(
     io.attr('d', line),
@@ -138,8 +144,20 @@ export const chart = (country: FetchedCountry) => {
     io.append(ticks)
   )(chartSvg);
 
+  const customEvent = new CustomEvent('deselect', {
+    detail: { id: country.id, value: country.value },
+    bubbles: true,
+  }) as CustomEvent;
+
+  (chartSvg as SVGElement).addEventListener('click', ((_e: CustomEvent) => {
+    (chartSvg as SVGElement).dispatchEvent(customEvent);
+  }) as EventListener);
+
   return io.append(chartSvg)(
-    compose(io.attr('class', 'chart'))(io.elem('div'))
+    compose(
+      io.attr('class', 'chart'),
+      io.attr('id', country.id)
+    )(io.elem('div'))
   );
 };
 

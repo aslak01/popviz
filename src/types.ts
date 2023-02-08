@@ -1,16 +1,16 @@
 type PopDataRaw = { date: string; value: number };
 type PopData = { date: number; value: number };
 type Country = { id: string; value: string };
-type FetchedCountry = Country & { data: PopData[] }
+type FetchedCountry = Country & { data: PopData[] };
 type State = string[];
-type FetchedCountries = FetchedCountry[]
+type FetchedCountries = FetchedCountry[];
 type List = Country[];
 type Dispatcher = (fn: (event: MouseEvent) => any) => () => void;
 
-type Coords = [number, number]
-type TickData = { coords: Coords, label: number }
+type Coords = [number, number];
+type TickData = { coords: Coords; label: number };
 
-type InputListDataEntry {
+type InputListDataEntry = {
   adminregion: {
     id: string;
     iso2code: string;
@@ -37,9 +37,9 @@ type InputListDataEntry {
     iso2code: string;
     value: string;
   };
-}
+};
 
-type InputCountryDataMeta {
+type InputCountryDataMeta = {
   lastupdated: string;
   page: number;
   pages: number;
@@ -47,9 +47,9 @@ type InputCountryDataMeta {
   sourceid: string;
   sourcename: string;
   total: number;
-}
+};
 
-type InputCountryData {
+type InputCountryData = {
   country: {
     id: string;
     value: string;
@@ -64,8 +64,7 @@ type InputCountryData {
   obs_status: string;
   unit: string;
   value: number;
-}
-
+};
 
 export type {
   State,
@@ -82,3 +81,11 @@ export type {
   InputCountryDataMeta,
   InputListDataEntry,
 };
+
+// typescript custom event guard
+// https://stackoverflow.com/a/47171216
+function isCustomEvent(event: Event): event is CustomEvent {
+  return 'detail' in event;
+}
+
+export { isCustomEvent };

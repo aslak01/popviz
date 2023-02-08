@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="src/style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" type="text/css" href="src/style.css" >
-</head>
-
-<body>
-  <div class="container">
-    <aside>
-      <div class="header">
-        <h1>Population of EUU countries, 1960–2021</h1>
-      </div>
-      <div id="selection-wrapper"></div>
-      <div id="button-wrapper"></div>
-      <div class="description">
-        <p>
-        Data fetched from the <a href="https://www.worldbank.org/en/home">World Bank</a> at selection.
-        </p>
-      </div>
-    </aside>
-    <main id="charts"></main>
+  <body>
+    <div class="container">
+      <aside>
+        <div class="header">
+          <h1>Population of EUU countries, 1960–2021</h1>
+        </div>
+        <div id="selection-wrapper"></div>
+        <div id="button-wrapper"></div>
+        <div class="description">
+          <p>
+            Data fetched from the
+            <a href="https://www.worldbank.org/en/home">World Bank</a> at
+            selection.
+          </p>
+          <p>Click a chart to remove it from the view.</p>
+        </div>
+      </aside>
+      <main id="charts"></main>
     </div>
-  </div>
-  <script type="module" src="/src/main.ts"></script>
-</body>
-
+    <script type="module" src="/src/app.ts"></script>
+  </body>
 </html>

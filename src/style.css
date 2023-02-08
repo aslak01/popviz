@@ -3,8 +3,6 @@
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
-
-  /* color: rgba(255, 255, 255, 0.87); */
   background-color: #242424;
 
   font-synthesis: none;
@@ -19,7 +17,7 @@
 a {
   font-weight: 500;
   color: white;
-  opacity: .9;
+  opacity: 0.9;
   text-decoration: inherit;
 }
 a:hover {
@@ -33,10 +31,10 @@ body {
 }
 
 h1 {
-  margin-top: 0;
+  margin-top: 1rem;
   font-size: 1.2em;
   color: white;
-  opacity: .9;
+  opacity: 0.9;
   line-height: 1.2;
 }
 
@@ -46,6 +44,7 @@ h1 {
   padding-bottom: var(--container-padding);
   justify-content: center;
   display: flex;
+  gap: 1rem;
 }
 
 #charts {
@@ -65,10 +64,12 @@ aside {
 
 aside p {
   color: white;
-  opacity: .8;
-  margin: 0;
+  opacity: 0.8;
   font-size: 8pt;
   line-height: initial;
+}
+aside p:first-child {
+  margin: 0;
 }
 
 select {
@@ -98,8 +99,8 @@ button {
 }
 
 button:disabled {
-  background-color: #343434;
   color: #424242;
+  opacity: 0.7;
 }
 
 button:hover {
@@ -108,6 +109,7 @@ button:hover {
 }
 
 button:disabled:hover {
+  color: #424242;
   border-color: #424242;
 }
 
@@ -123,7 +125,7 @@ svg {
 svg .chart-title {
   fill: white;
   font-weight: 600;
-  opacity: .7;
+  opacity: 0.7;
 }
 
 #charts div .chart:last-child svg .chart-title,
@@ -131,27 +133,26 @@ svg .chart-title {
 #charts div .chart:last-child svg .chart-label,
 svg:hover .chart-line,
 svg:hover .chart-title {
-  opacity: .9;
+  opacity: 0.9;
 }
 
 svg text {
   fill: white;
   color: white;
   font-size: 8pt;
-  opacity: .5;
+  opacity: 0.5;
 }
 svg .tick-mark {
   stroke: white;
-  opacity: .5;
+  opacity: 0.5;
 }
 
 svg:hover .chart-label {
-  opacity: .7;
+  opacity: 0.7;
 }
 
 svg .chart-line {
   stroke: white;
   fill: none;
-  opacity: .7;
+  opacity: 0.7;
 }
-
