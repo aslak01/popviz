@@ -40,7 +40,7 @@ async function app(
   compose(
     io.append(optionsView(options)),
     io.clear()
-  )(io.getElem(INPUTWRAPPEREL));
+  )(inputWrapper);
 
   const toRender = fetchedData.filter((c: FetchedCountry) =>
     state.includes(c.id)
