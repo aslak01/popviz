@@ -1,3 +1,3 @@
 project scaffolded with `pnpm create vite`
 
-to preview, run `npm i && npm run dev`
+to preview, visit the vercel deploy or clone and run `npm i && npm run dev`
