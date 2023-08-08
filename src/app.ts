@@ -1,17 +1,19 @@
 import type {
-  State,
   Country,
-  List,
-  FetchedCountry,
-  FetchedCountries,
   Dispatcher,
+  FetchedCountries,
+  FetchedCountry,
+  List,
+  State,
+  StateData,
 } from './types';
+
 import { isCustomEvent } from './types';
-import { compose, uniq, pluck, difference, filter, includes } from 'rambda';
+import { compose, difference, filter, includes, pluck, uniq } from 'rambda';
 import * as io from './io';
 import * as deserialise from './deserialise';
 import * as serialise from './serialise';
-import chart from './io/chart';
+import { makeChart } from './io/chart';
 
 const INPUTWRAPPEREL = 'selection-wrapper';
 const INPUTEL = 'selection';
@@ -25,22 +27,21 @@ const countries = deserialise.listData(await io.fetchList(LISTURL));
 async function app(
   state: State,
   options: List,
-  fetchedData: FetchedCountries,
+  fetchedData: StateData,
   select: Dispatcher,
   deselect: Dispatcher
 ) {
+  // console.log('fetched data in app()', fetchedData);
+
   const outputEl = io.getElem(OUTPUTEL);
   const inputWrapper = io.getElem(INPUTWRAPPEREL);
-  const btn = io.getElem(BTNEL) as HTMLInputElement;
+  const btn = io.getElem<HTMLInputElement>(BTNEL);
 
   options?.length === 0
     ? io.attr('disabled', 'disabled')(btn)
     : (btn!.disabled = false);
 
-  compose(
-    io.append(optionsView(options)),
-    io.clear()
-  )(inputWrapper);
+  compose(io.append(optionsView(options)), io.clear())(inputWrapper);
 
   const toRender = fetchedData.filter((c: FetchedCountry) =>
     state.includes(c.id)
@@ -78,7 +79,7 @@ async function app(
         ? alreadyFetched[0]
         : await serialise.addCountry(selectedCountryId, options);
 
-    const newData = uniq([...fetchedData, newCountry]) as FetchedCountry[];
+    const newData = uniq<FetchedCountry>([...fetchedData, newCountry]);
 
     const selectableCountries = difference(pluck('id', options), newState);
 
@@ -86,7 +87,7 @@ async function app(
       includes(x.id, selectableCountries)
     )(options);
 
-    // console.log(state, newState, selectedCountryId)
+    // console.log(state, newState, selectedCountryId);
 
     app(newState, newOptions, newData, select, deselect);
   });
@@ -94,7 +95,7 @@ async function app(
 
 function view(toRender: FetchedCountries) {
   const el = compose(io.attr('class', 'charts'))(io.elem('div'));
-  toRender.map(chart).forEach(io.add(el));
+  toRender.map(makeChart).forEach(io.add(el));
   return el;
 }
 
@@ -122,11 +123,10 @@ const selectionClick = io.on('click', io.getElem(BTNEL));
 
 const deselectionClick = io.on('deselect', io.getElem(OUTPUTEL));
 
-// couldn't think of a better way to solve Object.freeze([]) being type "readonly never[]"
 app(
-  Object.freeze([]) as unknown as string[],
+  Object.freeze<State>([]),
   countries,
-  Object.freeze([]) as unknown as FetchedCountries,
+  Object.freeze<StateData>([]),
   selectionClick,
   deselectionClick
 );
