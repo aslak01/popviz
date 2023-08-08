@@ -28,26 +28,27 @@ const elem = (tag: keyof HTMLElementTagNameMap) => document.createElement(tag);
 const elemNS = (tag: keyof SVGElementTagNameMap) =>
   document.createElementNS('http://www.w3.org/2000/svg', tag);
 const text = (content: string) => document.createTextNode(content);
-const getElem = (id: string): HTMLElement | HTMLInputElement | null =>
-  document.getElementById(id);
+const getElem = <T extends HTMLElement | HTMLInputElement>(
+  id: string
+): T | null => document.getElementById(id) as T | null;
 const getInputValue = (inputId: string) =>
   (getElem(inputId) as HTMLInputElement).value;
 
-const on = curry(function (eventType, element, fn) {
+const on = curry(function(eventType, element, fn) {
   element.addEventListener(eventType, fn);
 
-  return function () {
+  return function() {
     element.removeEventListener(eventType, fn);
   };
 });
 
-const addClass = curry(function (className, element) {
+const addClass = curry(function(className, element) {
   element.classList.add(className);
 
   return element;
 });
 
-const append = curry(function (node, element) {
+const append = curry(function(node, element) {
   element.appendChild(node);
 
   return element;
@@ -55,7 +56,7 @@ const append = curry(function (node, element) {
 
 const add = flip(append);
 
-const attr = curry(function (attributeName, attributeValue, element) {
+const attr = curry(function(attributeName, attributeValue, element) {
   element.setAttribute(attributeName, attributeValue);
 
   return element;
@@ -74,19 +75,19 @@ const scrollDown = (outputEl: HTMLElement) => {
 };
 
 export {
-  fetchJson,
-  fetchList,
-  fetchCountry,
+  add,
+  addClass,
+  append,
+  attr,
+  clear,
   elem,
   elemNS,
-  text,
-  on,
-  append,
-  add,
-  clear,
-  attr,
-  addClass,
+  fetchCountry,
+  fetchJson,
+  fetchList,
   getElem,
   getInputValue,
+  on,
   scrollDown,
+  text,
 };

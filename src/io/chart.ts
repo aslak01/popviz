@@ -1,11 +1,11 @@
-import type { FetchedCountry, PopData, Coords, TickData } from '../types';
+import type { Coords, FetchedCountry, PopData, TickData } from '../types';
 import { compose } from 'rambda';
 
 import * as d3 from 'd3';
 import * as io from './index';
 import { formatNr } from '../string-utils';
 
-export const chart = (country: FetchedCountry) => {
+export const makeChart = (country: FetchedCountry) => {
   // dimensions:
   const margins = {
     top: 15,
@@ -160,5 +160,3 @@ export const chart = (country: FetchedCountry) => {
     )(io.elem('div'))
   );
 };
-
-export default chart;

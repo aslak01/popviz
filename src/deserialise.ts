@@ -1,11 +1,11 @@
-import { curry, reduce, assoc, keys, pick } from 'rambda';
+import { assoc, curry, keys, pick, reduce } from 'rambda';
 
 import type {
-  InputListDataEntry,
-  InputCountryData,
   Country,
-  PopDataRaw,
+  InputCountryData,
+  InputListDataEntry,
   PopData,
+  PopDataRaw,
 } from './types';
 
 const listData = (listData: InputListDataEntry[]): Country[] => {
@@ -16,13 +16,13 @@ const listData = (listData: InputListDataEntry[]): Country[] => {
       keys(obj)
     )
   );
-  const pickData = (entry: InputListDataEntry) => pick('id,name', entry);
+  const pickData = (entry: InputListDataEntry) => pick(['id', 'name'], entry);
   return listData.map(pickData).map(renameKeys({ name: 'value' }));
 };
 
 const popData = (popData: InputCountryData[]): PopData[] => {
   const pickData = (entry: InputCountryData): PopDataRaw =>
-    pick('date,value', entry);
+    pick(['date', 'value'], entry);
   // don't deal with string dates since they are just years
   const dateToNr = (entry: PopDataRaw): PopData => {
     return {

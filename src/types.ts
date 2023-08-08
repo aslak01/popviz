@@ -2,7 +2,8 @@ type PopDataRaw = { date: string; value: number };
 type PopData = { date: number; value: number };
 type Country = { id: string; value: string };
 type FetchedCountry = Country & { data: PopData[] };
-type State = string[];
+type State = readonly string[];
+type StateData = readonly FetchedCountry[];
 type FetchedCountries = FetchedCountry[];
 type List = Country[];
 type Dispatcher = (fn: (event: MouseEvent) => any) => () => void;
@@ -67,19 +68,20 @@ type InputCountryData = {
 };
 
 export type {
-  State,
-  Country,
-  List,
-  FetchedCountries,
-  Dispatcher,
-  PopData,
-  PopDataRaw,
   Coords,
-  TickData,
+  Country,
+  Dispatcher,
+  FetchedCountries,
   FetchedCountry,
   InputCountryData,
   InputCountryDataMeta,
   InputListDataEntry,
+  List,
+  PopData,
+  PopDataRaw,
+  State,
+  StateData,
+  TickData,
 };
 
 // typescript custom event guard
